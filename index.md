@@ -1,4 +1,7 @@
-## Welcome to GitHub Pages
+# My Portfolio
+## A showcase of projects and abilities
+
+### Professional Self-Assessment
 
 You can use the [editor on GitHub](https://github.com/mp94git/mp94git.github.io/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
 
