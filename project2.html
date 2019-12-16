@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="assets/css/main.css" />
+	<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+</head>
+<body>
+<div id="main">
+<p><a href="index.html">Return to main ePortfolio</a></p>
+<h1><p>Project 2:</p></h1>
+<p>Sorting Program:</p>
+<pre><code>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <cmath>
+#include <iomanip>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+//Initialize the string to double method
+double strToDouble(string str, char ch);
+
+//Define a struct for the unused elements of the excel spreadsheet
+struct unused{
+	string department;
+	string closeDate;
+	string amount;
+	string inventoryId;
+	string vehicleId;
+	string receiptNumber;
+};
+
+//Define a strut to hold the relevant values within the excel spreadsheet
+struct Bid {
+	string bidId; // unique identifier
+	string title;
+	string fund;
+	double amount;
+	Bid() {
+		amount = 0.0;
+	}
+};
+
+//Variable to count the lines that are imported to the vector (later in the program)
+int lineCount;
+
+//Utilized with quicksort to partition the vector and swap the values
+int Partition(vector<Bid> &my_records, int start, int end) {
+	string pivot = my_records[end].bidId;
+	int partitionIndex = start; //set partition index as start initially
+	for (int i = start;i < end;i++) {
+		if (my_records[i].bidId <= pivot) {
+			swap(my_records[i], my_records[partitionIndex]); //Swap if element is lesser than pivot
+			partitionIndex++;
+		}
+	}
+	swap(my_records[partitionIndex], my_records[end]);//swap pivot with element at partition index
+	return partitionIndex;
+
+}
+
+//To start, pass in the start index of 0 and the end of lineCount-1.
+void quicksort(vector<Bid> &my_records, int start, int end) {
+
+	if (start < end) {
+		int partitionIndex = Partition(my_records, start, end); //Call partition.
+		quicksort(my_records, start, partitionIndex - 1); //quicksorts the records below the partition index
+		quicksort(my_records, partitionIndex + 1, end); //quicksorts the records above the partition index
+	}
+}
+
+//This is the selection sort method.
+void selectionSort(vector<Bid> &my_records, int n) {
+	int i, min_index, j, choice; //define the int variables to be used in this method
+
+		//Menu prompt for the user to select which element they want to sort by.
+		cout << "Choose the category to sort by:" << endl;
+		cout << "  1. Bid" << endl;
+		cout << "  2. Title" << endl;
+		cout << "  3. Fund" << endl;
+		cout << "  4. Amount" << endl;
+		cout << "Enter choice: ";
+		cin >> choice;
+
+		//declares a switch to monitor the user's choice
+		switch (choice) {
+
+		//Sorts by bid Id
+		case 1:
+			//First for loop: goes through all the elements of the vector
+			for (i = 0; i < n - 1; i++) {
+					min_index = i; //sets the current minimum index to the value i
+
+					//Sets j to the index above i for comparison
+					for (j = i + 1; j < n; j++) {
+						//Check to see if j's value is less than i's value
+						if (my_records[j].bidId < my_records[min_index].bidId) {
+							min_index = j; //Sets the minimum index to j if it is lower than i.
+						}
+					}
+					swap(my_records[min_index], my_records[i]); //Swaps the values at minimum index with the values at i
+				}
+
+			break;
+
+		//Sorts by bid title
+		case 2:
+			//Same logic as case 1.  See case 1 for more information.
+			for (i = 0; i < n - 1; i++) {
+					min_index = i;
+					for (j = i + 1; j < n; j++) {
+						if (my_records[j].title < my_records[min_index].title) {
+							min_index = j;
+						}
+					}
+					swap(my_records[min_index], my_records[i]);
+				}
+
+			break;
+
+		//Sorts by fund
+		case 3:
+			//Same logic as case 1.  See case 1 for more information.
+			for (i = 0; i < n - 1; i++) {
+					min_index = i;
+					for (j = i + 1; j < n; j++) {
+						if (my_records[j].fund < my_records[min_index].fund) {
+							min_index = j;
+						}
+					}
+					swap(my_records[min_index], my_records[i]);
+				}
+
+			break;
+
+		//Sorts by amount
+		case 4:
+			//Same logic as case 1.  See case 1 for more information.
+			for (i = 0; i < n - 1; i++) {
+					min_index = i;
+					for (j = i + 1; j < n; j++) {
+						if (my_records[j].amount < my_records[min_index].amount) {
+							min_index = j;
+						}
+					}
+					swap(my_records[min_index], my_records[i]);
+			}
+			break;
+
+	}
+}
+
+//Method for displaying the current organization of the vector holding the excel spreadsheet information.
+void displayBid(vector<Bid> my_records) {
+	//For loop to go through each of the values of the vector 'my_records'
+	for (size_t i = 0; i < my_records.size() - 1; i++)
+	{
+		//Prints the struct values at the current index the loop is at.
+		std::cout <<"Bid ID: " << my_records[i].bidId << " ";
+		std::cout <<"Title: " << my_records[i].title << " ";
+		std::cout <<"Fund: " << my_records[i].fund << " ";
+		std::cout << "Amount: $" << my_records[i].amount << endl;
+	}
+}
+
+//Method for converting a string into a double.
+double strToDouble(string str, char ch) {
+    str.erase(remove(str.begin(), str.end(), ch), str.end());
+    return atof(str.c_str());
+}
+
+//Method for adding a bid to the vector
+void addBid(vector<Bid> &my_records){
+	Bid newbid; //declares a new struct to hold the new bid information
+	string amount;
+	int arraysize = my_records.size();
+
+	cout << "Current size is: " << arraysize << endl;
+
+	cout << "Enter Id: ";
+    cin.ignore();
+    getline(cin, newbid.bidId);
+
+    cout << "Enter title: ";
+    getline(cin, newbid.title);
+
+    cout << "Enter fund: ";
+    cin >> newbid.fund;
+
+    cout << "Enter amount (include cents): ";
+    cin >> newbid.amount;
+
+
+    my_records.insert(my_records.begin(), newbid); //inserts the new bid into my_records
+
+    arraysize = my_records.size();
+
+    cout << arraysize << endl;
+
+}
+
+int main()
+{
+	//Sets up and opens the csv file
+	ifstream myFile;
+	myFile.open("C:/Users/matthew/Desktop/eBid_Monthly_Sales_Dec_2016.csv");
+
+	string str;
+	getline(myFile, str); //Skip the first line
+
+	//Declares the vector that will hold the csv values
+	std::vector<Bid> my_records;
+
+	//While loop that goes through the file until there are no more rows left.
+	while (getline(myFile, str))
+	{
+		Bid bid; //Declares a new struct to hold the bid information
+		string temp;
+		unused unused; //Declares a struct to hold the unused bid information
+		istringstream iss(str);
+		string token;
+
+		//These getlines go through and partition the wanted csv data from the unwanted data
+		getline(iss, bid.title, ',');
+		getline(iss, bid.bidId, ',');
+		getline(iss, unused.department, ',');
+		getline(iss, unused.closeDate, ',');
+		getline(iss, unused.amount, ',');
+		bid.amount = strToDouble(unused.amount, '$');
+		getline(iss, unused.inventoryId, ',');
+		getline(iss, unused.vehicleId, ',');
+		getline(iss, unused.receiptNumber, ',');
+		getline(iss, bid.fund, ',');
+
+
+		my_records.push_back(bid); //Puts the bid data into my_records before looping back to get the next line.
+
+	}
+
+	lineCount = my_records.size(); //sets the linecount to the current size of my_records
+
+	int choice = 0;
+
+	//User menu that allows them to select what kind of sorting method, as well as displaying the bids and adding new bids to the vector
+	while (choice != 9) {
+		cout << "Menu:" << endl;
+		cout << "  1. Display All Bids" << endl;
+		cout << "  2. Add Bid" << endl;
+		cout << "  3. Selection Sort All Bids" << endl;
+		cout << "  4. Quick Sort All Bids" << endl;
+		cout << "  9. Exit" << endl;
+		cout << "Enter choice: ";
+		cin >> choice;
+
+		//switch that examines the user's selection
+		switch (choice) {
+
+
+		case 1:
+			// Loop and display the bids read
+			displayBid(my_records);
+
+			break;
+		case 2:
+					// Add a bid
+					addBid(my_records);
+					lineCount = my_records.size();
+					break;
+		case 3:
+			//Perform a selection sort on the bids
+			selectionSort(my_records, lineCount);
+			cout << endl;
+
+			break;
+		case 4:
+			//Perform a quick sort on the bids
+			int min, last;
+			min = 0;
+			last = lineCount - 1;
+			quicksort(my_records, min, last);
+			break;
+		}
+	}
+
+	system("pause");
+	return 0;
+}
+
+</code></pre>
+<h2><p>Project 2 Narrative</p></h2>
+<p>	This artifact’s concept is originally from my CS260 course, which focused on data structures and algorithms.  Originally this program was part of my final project submission, and it illustrated a usage of a selection sort algorithm and a quick sort algorithm.  The general concept of the program was to take an excel spreadsheet, parse out the data, and finally organize that data using the various sorting methodologies.  I chose to include this because it illustrates my ability to understand and develop algorithms, while also displaying knowledge of data structures.  I chose to utilize the part of the final project dealing with quick sort and selection sort, because these are the two sorting methods that I’ve used the most since that course ended.  <br><br>
+
+The development of this artifact for the ePortfolio was simultaneously the most challenging and the most fun out of the three artifacts that I chose.  It had been quite some time since my CS260 course, and when I tried to open and run my previous program I was unable to get it working.  The issue appeared to be present in the parser program, which was provided to the CS260 class from a separate source.    After much deliberation I decided that it would be better for me to just rewrite the program myself and to use my own parsing method for the excel file.  Parsing the file required a number of considerations, chief among them being that I was not going to be working with all of the columns present, only the title, bidId, amount, and fund columns would be used.  To keep certain columns and remove others, I employed a method of declaring two structs, one that would hold the information from the line that I needed, while the other held the information that would be discarded.  Once all the important information from that line was collected, I wrote it to the vector of structs holding all of the bid information.  This method was perhaps a bit unconventional, but it seemed like the simplest method I could come up with at the time.<br><br>
+
+After the data was parsed, the user is prompted with a menu that requests an input selection.  They can display the bids, add a bid, and sort the bids using either selection sort or quick sort.  The add bid functionality was easy to implement, as it was just a series of user inputs that were then inserted into the vector.  I rewrote the quicksort algorithm for this new program, but the underlying logic was the same as it was in my previous program.  It consisted of a quicksort method, as well as a partition method, which split the vector into two different groups for sorting.  The selection sort method was a simple method that went through and checked each index value against the next one in the vector.  If the value was more than the next one, they were swapped and vice-versa.  The selection sort is also where I implemented the update to the program that you suggested in the feedback from the module one assignment.  I added a switch in that prompted the user for the value they wanted to sort by; either the bid id, title, fund, or amount.<br><br>
+
+This program might be a little rough around the edges, but I think it shows a good aptitude for both the selection sort and quick sort methods.  That being said, there are a number of things that I might be able to improve upon before my final submission.  First off, the program parsed the data from the excel file with the assumption that items were separated by a comma.  While that generally worked, I hit issues where dollar amounts had commas present, and certain receipts listed multiple items (with commas in between).  This messed up my parse, which required me to go through the excel doc and remove all of the commas.  I’m sure there is a way to parse excel data without hitting this issue, so I will have to go through and see if I can tidy it up.
+</p>
+<p><a href="index.html">Return to main ePortfolio</a></p>
+</div>
+</body>
+</html>

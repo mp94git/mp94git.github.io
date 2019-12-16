@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="assets/css/main.css" />
+	<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+</head>
+<body>
+<div id="main">
+<p><a href="index.html">Return to main ePortfolio</a></p>
+<h1><p>Project 1:</p></h1>
+<p>Main Login Program:</p>
+<pre><code>
+import csv
+from cryptography.fernet import Fernet
+
+def main():
+	with open(r"C:\Users\Matthew\Desktop\School Work Term 13\CS499\updatedzookeeperdocs\usersEncryp.txt","r") as file:
+		file_reader = csv.reader(file)
+		user_find(file_reader)
+		file.close()
+		
+def user_find(file):
+	user = input("Enter your username: ")
+	for row in file:
+		if row[0] == user:
+			print("username found", user)
+			user_found = [row[0],row[1],row[2]]
+			pass_check(user_found)
+			break
+		else:
+			print("not found")
+			
+def pass_check(user_found):
+
+	attempts = 0
+	lockOut = False
+	
+	while (lockOut != True):
+		user = input("enter your password: ")
+		decrypt_pass = pass_decrypt(user_found)
+		if decrypt_pass == user:
+			print("password match")
+			position_check(user_found)
+			break
+		elif attempts < 2:
+			print("password was not a match")
+			attempts = attempts + 1
+			print (attempts)
+		else:
+			print("Too many incorrect attempts. Please see administrator")
+			lockOut = True
+			
+def position_check(user_found):
+
+	if user_found[2] == "zookeeper":
+		with open(r"C:\Users\Matthew\Desktop\School Work Term 13\CS499\updatedzookeeperdocs\zookeeper.txt", "r") as f:
+			print()
+			print(f.read())
+	elif user_found[2] == "admin":
+		with open(r"C:\Users\Matthew\Desktop\School Work Term 13\CS499\updatedzookeeperdocs\admin.txt", "r") as f:
+			print()
+			print(f.read())
+	elif user_found[2] == "veterinarian":
+		with open(r"C:\Users\Matthew\Desktop\School Work Term 13\CS499\updatedzookeeperdocs\veterinarian.txt", "r") as f:
+			print()
+			print(f.read())
+
+def pass_decrypt(user_found):
+
+	#Get the key from the file
+	file = open(r'C:\Users\Matthew\Desktop\School Work Term 13\CS499\updatedzookeeperdocs\pythonKey.txt', 'rb')
+	key = file.read()
+	file.close()
+
+	password = str.encode(user_found[1])
+		
+	fernet = Fernet(key)
+	decrypted = fernet.decrypt(password)
+	decoded = decrypted.decode()
+
+	#Write the decrypted file
+	with open(r'C:\Users\Matthew\Desktop\School Work Term 13\CS499\updatedzookeeperdocs\testDecrypted.txt', 'wb') as f:
+		f.write(decrypted)
+
+	print (decoded)
+
+	return decoded
+			
+main()		
+
+</code></pre>
+<p>Encryption Program:</p>
+<pre><code>
+import csv
+import sys
+import os
+import hashlib
+import base64
+import cryptography
+from cryptography.fernet import Fernet
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+
+#print(os.listdir('.'))
+
+with open(r'C:\Users\matthew.phillips5\Documents\names.csv', 'r') as csv_file:
+	csv_reader = csv.reader(csv_file)
+	
+	#for line in csv_reader:
+	#	print(line)
+	
+	#key = Fernet.generate_key()
+	
+	hash = hashlib.sha256(b"mighty").hexdigest()
+	
+	#print(key)
+
+	csv_file.close()
+	
+password_provided = "passwords"
+password = password_provided.encode()
+
+salt = b'q\xd2V\xefi\xb4|\x16\xfe\xa94bV\xa92\xa8'
+kdf = PBKDF2HMAC(
+	algorithm=hashes.SHA256(),
+	length=32,
+	salt=salt,
+	iterations = 100000,
+	backend = default_backend()
+)
+key = base64.urlsafe_b64encode(kdf.derive(password))
+print (key)
+	
+
+print (password)
+	
+file = open(r'S:\Shared\ENG\Elect_Eng\E M C\Phillips\Python\PyBasics\pythonKey.txt', 'rb')
+key = file.read() # The key will be type bytes
+file.close()
+print (key)	
+</code></pre>
+<h2><p>Project 1 Narrative</p></h2>
+<p>For this milestone I delved back into my IT145 final project, which was a basic login program for a zoo’s employees.  User’s would enter a username and password, and if their credentials matched up with credentials in a separate text file, they would be let into the system and information pertaining to their position would be displayed.  If they were unsuccessful in their attempts they would be locked out of the system and the program would terminate.  As a security feature, the program utilized an MD5 hash to encode the password so that it would be harder to identify if someone got ahold of the file containing the credentials.<br><br>
+	
+I chose to include this program because I thought it would be a useful demonstration of my utilization of Python.  I did not get to use Python too much over the course of the Computer Science program, but I really enjoy the language so I wanted to put it on display.  The program itself is rudimentary, but that meant it would be easier to translate from java over to Python.  In addition to the change from programming languages, I thought it would be a good opportunity for me to explore a more effective hashing method for the passwords.  In the real world, MD5 would not be an ideal hashing method for protecting user credentials in a system, and because of that I wanted to explore something else.  I settled on the SHA256 hash because it had a higher degree of security, and it seemed like something I would be able to learn and work with quite easily.<br><br>
+
+To implement the SHA256 hash, I had to create a new file that would allow me to make the key for the hash.  I imported the cryptography package that is included with Python, which allowed me to utilize a number of different commands to help with the encoding and decoding.  One of the key components was the creation of a key derivation function, which was used to help create the hash that would be applied to the key.  This was all executed in the csvPrac.py file, where I generated a key and wrote it to a separate text file.  Granted, if I was doing this for use in a real world application, I would not included the text file anywhere near the same location as the program that is using it, but I figured it would be fine for this project.  With the key generated, I was then able to use it to encrypt all of the passwords in the text file containing the user credentials.  Moving on to the main login program, I utilized much of the same logic as the java program I made before.  I did choose to use more methods in this program in comparison to my last one, mainly for the purposes of breaking things up better.  Once the user passes the username check, they enter a password, which is then compared against the decrypted version of the password found in the file.  If I had to make a change to this program, this is where it should be.  The issue I have, is that I am decrypting the password in the file, when I should be encrypting the password the user gives.  The reason I think that I should make this change, is because by decrypting the password in the program, I open up the possibility of a hacker having access to the real password for the system.  If time permits I will make that change before the final submission.</p>
+<p><a href="index.html">Return to main ePortfolio</a></p>
+</div>
+</body>
+</html>

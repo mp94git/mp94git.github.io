@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="assets/css/main.css" />
+	<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+</head>
+<body>
+<div id="main">
+<p><a href="index.html">Return to main ePortfolio</a></p>
+<h1><p>Project 3:</p></h1>
+<pre><code>
+#This is a python script to help create, remove, update, and delete items from a database.
+import json
+from bson import json_util
+from pymongo import MongoClient
+connection = MongoClient('localhost', 27017)
+db = connection['market']
+collection = db['stocks']
+import pprint
+import bottle
+from bottle import route, run, request, abort, post, get, delete
+import datetime
+
+
+#The create_doc method is called, and it prompts the user for inputs into each of the database's fields.
+def create_doc():
+  try:
+    import datetime
+    busTicker = raw_input("Enter Company Ticker:")
+    busProfMarg = raw_input("Enter Profit Margin:")
+    busOwn = raw_input("Enter Institutional Ownership:")
+    busEPS = raw_input("Enter ESP growth past 5 years:")
+    busDebt = raw_input("Enter Total Debt/Equity:")
+    busRatio = raw_input("Enter Current Ratio:")
+    busReturn = raw_input("Enter Return on Assets:")
+    busSector = raw_input("Enter Sector:")
+    busPS = raw_input("Enter P/S:")
+    busChange = raw_input("Enter Change from Open:")
+    busPerYTD = raw_input("Enter Performance (YTD):")
+    busPerw = raw_input("Enter Performance (Week):")
+    busQuick = raw_input("Enter Quick Ratio:")
+    busInsider = raw_input("Enter Insider Transactions:")
+    busPB = raw_input("Enter P/B:")
+    busQOQ = raw_input("Enter EPS growth quarter over quarter:")
+    busPayout = raw_input("Enter Payout Ratio:")
+    busPerQ = raw_input("Enter Performance (Quarter):")
+    busForward = raw_input("Enter Forward P/E:")
+    busPE = raw_input("Enter P/E:")
+    busSMA = raw_input("Enter 200-Day Simple Moving Average:")
+    busShares = raw_input("Enter Shares Outstanding:")
+    busEarnings = datetime.datetime.now()
+    busFTWH = raw_input("Enter 52-Week High:")
+    busPcash = raw_input("Enter P/Cash:")
+    busChange = raw_input("Enter Chance:")
+    busAnalyst = raw_input("Enter Analyst Recom:")
+    busVol = raw_input("Enter Volatility (Week):")
+    busCountry = raw_input("Enter Country:")
+    busRoE = raw_input("Enter Return on Equity:")
+    busfifDL = raw_input("Enter 50-Day Low:")
+    busPrice = raw_input("Enter Price:")
+    busFDH = raw_input("Enter 50-Day High:")
+    busROI = raw_input("Enter Return on Investment:")
+    bussharesFloat = raw_input("Enter Shares Float:")
+    busDiv = raw_input("Enter Dividend Yield:")
+    busEPSNFY = raw_input("Enter EPS growth next 5 years:")
+    busIndustry = raw_input("Enter Industry:")
+    busBeta = raw_input("Enter Beta:")
+    busSGQOQ = raw_input("Enter Sales growth quarter over quarter:")
+    busOpMarg = raw_input("Enter Operating Margin:")
+    busEPSTTM = raw_input("Enter EPS (ttm):")
+    busPEG = raw_input("Enter PEG:")
+    busFloatShort = raw_input("Enter Float Short:")
+    busFTWL = raw_input("Enter 52-Week Low:")
+    busATR = raw_input("Enter Average True Range:")
+    busEPSGNY = raw_input("Enter EPS growth next year:")
+    busSGPFY = raw_input("Enter Sales growth past 5 years:")
+    busCompany = raw_input("Enter Company:")
+    busGap = raw_input("Enter Gap:")
+    busRelVol = raw_input("Enter Relative Volume:")
+    busVolaMonth = raw_input("Enter Volatility (Month):")
+    busMarcap = raw_input("Enter Market Cap:")
+    busVolume = raw_input("Enter Volume:")
+    busGross = raw_input("Enter Gross Margin:")
+    busShort = raw_input("Enter Short Ratio:")
+    busPerHY = raw_input("Enter Performance (Half Year):")
+    busRSI = raw_input("Enter Relative Strength Index (14):")
+    busIO = raw_input("Enter Insider Ownership:")
+    busTDSMA = raw_input("Enter 20-Day Simple Moving Average:")
+    busPerMon = raw_input("Enter Performance (Month):")
+    busPFCF = raw_input("Enter P/Free Cash Flow:")
+    busInstTran = raw_input("Enter Institutional Transactions:")
+    busPerY = raw_input("Enter Performance (Year):")
+    busLTDE = raw_input("Enter LT Debt/Equity:")
+    busAvgVol = raw_input("Enter Average Volume:")
+    busEPSGTY = raw_input("Enter EPS growth this year:")
+    busFDSMA = raw_input("Enter 50-Day Simple Moving Average:")   
+    
+    
+    #Once the inputs are collected, the new values are added to the database.
+    collection.insert_one(
+        {
+          "Ticker": busTicker,
+          "Profit Margin": busProfMarg,
+          "Institutional Ownership": busOwn,
+          "EPS growth past 5 years": busEPS,
+          "Total Debt/ Equity": busDebt,
+          "Current Ratio": busRatio,
+          "Return on Assets": busReturn,
+          "Sector": busSector,
+          "P/S": busPS,
+          "Change from Open": busChange,
+          "Performance (YTD)": busPerYTD,
+          "Performance (Week)": busPerw,
+          "Quick Ratio": busQuick,
+          "Insider Transactions": busInsider,
+          "P/B": busPB,
+          "EPS growth quarter over quarter": busQOQ,
+          "Payout Ratio": busPayout,
+          "Performance (Quarter)": busPerQ,
+          "Forward P/E": busForward,
+          "P/E": busPE,
+          "200-Day Simple Moving Average": busSMA,
+          "Shares Outstanding": busShares,
+          "Earnings Date": busEarnings,
+          "52-Week High": busFTWH,
+          "P/Cash": busPcash,
+          "Change": busChange,
+          "Analyst Recom": busAnalyst,
+          "Volatility (Week)": busVol,
+          "Country": busCountry,
+          "Return on Equity": busRoE,
+          "50-Day Low": busfifDL,
+          "Price" : busPrice,
+          "50-Day High" : busFDH,
+          "Return on Investment": busROI,
+          "Shares Float": bussharesFloat,
+          "Dividend Yield": busDiv,
+          "EPS growth next 5 years": busEPSNFY,
+          "Industry": busIndustry,
+          "Beta": busBeta,
+          "Sales growth quarter over quarter": busSGQOQ,
+          "Operating Margin": busOpMarg,
+          "EPS (ttm)": busEPSTTM,
+          "PEG": busPEG,
+          "Float Short": busFloatShort,
+          "52-Week Low": busFTWL,
+          "Average True Range": busATR,
+          "EPS growth next year": busEPSGNY,
+          "Sales growth past 5 years": busSGPFY,
+          "Company": busCompany,
+          "Gap": busGap,
+          "Relative Volume": busRelVol,
+          "Volatility (Month)": busVolaMonth,
+          "Market Cap": busMarcap,
+          "Volume": busVolume,
+          "Gross Margin": busGross,
+          "Short Ratio": busShort,
+          "Performance (Half Year)": busPerHY,
+          "Relative Strength Index (14)": busRSI,
+          "Insider Ownership": busIO,
+          "20-Day Simple Moving Average": busTDSMA,
+          "Performance (Month)": busPerMon,
+          "P/Free Cash Flow": busPFCF,
+          "Institutional Transactions": busInstTran,
+          "Performance (Year)": busPerY,
+          "LT Debt/Equity": busLTDE,
+          "Average Volume": busAvgVol,
+          "EPS growth this year": busEPSGTY,
+          "50-Day Simple Moving Average": busFDSMA
+
+        })
+    #Prompts the user that the import was successful
+    print "\nInserted data successfully\n"
+  except Exception, e:
+    print str(e)
+
+#The get_document method will take a user input key and value, to go find in the database.
+def get_document(key, value):
+  #finds the document in the database using the user's key and value
+  document = collection.find_one({key: value})
+  #if the document isn't in the database it notifies the user.
+  if not document:
+    abort(404, 'No document with %s: %s' % key, value)
+  return document
+
+#delete_doc is a method to delete items from the stock database.  It will attempt to print out the deleted value (which it shouldn't be able to do),
+#then it will notify the user that the deletion was successful.
+def delete_doc(value):
+  collection.delete_many({"Ticker":value})
+  pprint.pprint(collection.find_one({"Ticker": value}))
+  print "\nDeletion successful\n"
+  
+#update_doc will take a key and value from the user input, and use it to update a "volume" value within the database.  
+def update_doc(key, value):
+  collection.update_one(
+        {"Ticker": key},
+        {
+          "$set":{
+            "Volume": value
+          }
+        })
+  document = collection.find_one({"Ticker" : key})
+  return document
+
+
+#This portion of code prompts the user for the CRUD operation they want to perform.
+selection = raw_input("What would you like to do (create, read, update, delete): ")
+#Checks the user's input
+if selection == "read":
+  key = raw_input("Please enter a key to search for: ")
+  value = raw_input("Please enter a value to search for: ")
+  document = get_document(key, value)
+  pprint.pprint(document)
+elif selection == "create":
+  create_doc()
+elif selection == "update":
+  key = raw_input("Please enter a Ticker to search for: ")
+  value = raw_input("Please enter a new value for Volume (greater than 0): ")
+  document = update_doc(key, value)
+  pprint.pprint(document)
+elif selection == "delete":
+  value = raw_input("Please enter the Ticker value for the deletion: ")
+  delete_doc(value)
+  print "\nDeletion successful\n"
+</code></pre>
+<h2><p>Project 3 Narrative</p></h2>
+<p>	This artifact is from the NoSQL class that I took last term, and it was designed to add and update information within a database containing company stock information.  I chose to include this artifact because I think NoSQL is very important in the current technological climate.  Given the heavy modern focus on big data and real-time applications, it seems more marketable to highlight a knowledge of NoSQL rather than rational database management.  This artifact that I included highlights the ability to perform CRUD operations on a database, which ultimately is one of the most important functions when dealing with a database.<br><br>
+
+I improved upon my initial program by adding in read and delete capabilities to the script.  Prior to this update, I was only able to create a new database item and update one of the items in the database.  By adding these last two capabilities, I give the user the ability to have control over any element in the database.  My main focus when updating the script was to make sure it was intuitive for the user.  This meant that I had to add a menu that allowed the user to select the operation that they wanted to carry out.  From there, the script calls the corresponding method that reflects the user’s request.  I think there are a couple things that I could potentially update for the final submission to make the program a bit more versatile.  First off, I should update the ‘update’ functionality so that the user can update any element in the database, not just the one that I hard coded in.  Beyond that, I should also add in some error checking for the user menu, so if they don’t enter a valid option the program doesn’t crash. <br><br>
+
+</p>
+
+
+<p><a href="index.html">Return to main ePortfolio</a></p>
+</div>
+</body>
+</html>
